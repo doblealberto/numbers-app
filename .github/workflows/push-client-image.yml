@@ -1,4 +1,4 @@
-name: push server
+name: push-client
 
 on:
   push:
