@@ -11,24 +11,24 @@ on:
       - main
 
 jobs:
-  detect-client:
-    runs-on: ubuntu-latest  # windows-latest | macos-latest
-    name: Detects changes into client
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
-      - name: Get changed files in the docs folder
-        id: changed-files-specific
-        uses: tj-actions/changed-files@v29.0.7
-        with:
-          files: |
-            client/**
+  # detect-client:
+  #   runs-on: ubuntu-latest  # windows-latest | macos-latest
+  #   name: Detects changes into client
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
+  #     - name: Get changed files in the docs folder
+  #       id: changed-files-specific
+  #       uses: tj-actions/changed-files@v29.0.7
+  #       with:
+  #         files: |
+  #           client/**
 
-      - name: Run step if any file(s) in the docs folder change
-        if: steps.changed-files-specific.outputs.any_changed == 'true'
-        run: |
-         echo "Files change in client"
+  #     - name: Run step if any file(s) in the docs folder change
+  #       if: steps.changed-files-specific.outputs.any_changed == 'true'
+  #       run: |
+  #        echo "Files change in client"
 
   push-client:
     if: jobs.detect-client.steps.changed-files-specific.outputs.any_changed == 'true'
@@ -47,7 +47,7 @@ jobs:
          with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-south-1
+          aws-region: us-east-1
 
 ################################################################
 ######################## Login to ECR  #########################
