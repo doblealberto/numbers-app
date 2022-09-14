@@ -12,12 +12,12 @@ on:
 
 jobs:
 
-  detect-server:
+  detect-proxy:
     runs-on: ubuntu-latest  # windows-latest | macos-latest
-    name: Detects changes into server
+    name: Detects changes into proxy
     defaults:
       run:
-        working-directory: ./server
+        working-directory: ./proxy
 
     steps:
       - uses: actions/checkout@v3
@@ -73,7 +73,7 @@ jobs:
         id: push-server-backend
         env:
           ECR_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
-          ECR_REPOSITORY: "finalproject-${{ github.ref_name }}-backend-image"
+          ECR_REPOSITORY: "finalproject-${{ github.ref_name }}-proxy-image"
           IMAGE_TAG: ${{ steps.generate_sha.outputs.sha }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
