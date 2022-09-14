@@ -76,7 +76,7 @@ jobs:
           ECR_REPOSITORY: "finalproject-${{ github.ref_name }}-backend-image"
           IMAGE_TAG: ${{ steps.generate_sha.outputs.sha }}
         run: |
-          docker build .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY::latest
