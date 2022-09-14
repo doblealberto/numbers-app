@@ -60,11 +60,11 @@ jobs:
 # ################################################################
 # ######################## Generate SHA  #########################
 # ################################################################
-#        - name: Generate sha
-#          id: generate_sha
-#          run: |
-#           SHA=$(echo $GITHUB_SHA)
-#           echo "::set-output name=sha::$SHA"
+       - name: Generate sha
+         id: generate_sha
+         run: |
+          SHA=$(echo $GITHUB_SHA)
+          echo "::set-output name=sha::$SHA"
 
 # ################################################################
 # ###################### BUILD and push image ####################
