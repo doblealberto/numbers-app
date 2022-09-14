@@ -9,7 +9,7 @@ function App() {
     <Router>
       <Fragment>
         <header className="header">
-          <div>Test</div>
+          <div>Testing change</div>
           <Link to="/">Home</Link>
           <Link to="/otherpage">Other page</Link>
         </header>
