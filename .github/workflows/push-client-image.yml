@@ -27,6 +27,8 @@ jobs:
 
       - name: Run step if any file(s) in the docs folder change
         if: steps.changed-files-specific.outputs.any_changed == 'true'
+        run: |
+         echo "Files change in client"
 
   push-client:
     if: jobs.detect-client.steps.changed-files-specific.outputs.any_changed == 'true'
