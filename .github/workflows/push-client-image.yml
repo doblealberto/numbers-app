@@ -12,46 +12,24 @@ on:
 
 jobs:
 
-
-  docker-build:
-    runs-on: ubuntu-latest
+  detect-client:
+    runs-on: ubuntu-latest  # windows-latest | macos-latest
+    name: Detects changes into client
     steps:
-      - uses: actions/checkout@master
-      - name: Login
-        uses: docker/login-action@v2
+      - uses: actions/checkout@v3
         with:
-            username: ${{ secrets.DOCKER_HUB_USERNAME }}
-            password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      - name: Docker build setup action
-        uses: docker/setup-buildx-action@v1
-
-      - name: Build and push
-        uses: docker/build-push-action@v2
+          fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
+      - name: Get changed files in the docs folder
+        id: changed-files-specific
+        uses: tj-actions/changed-files@v29.0.7
         with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/app-todos:latest
+          files: |
+            client/**
 
-#   # detect-client:
-#   #   runs-on: ubuntu-latest  # windows-latest | macos-latest
-#   #   name: Detects changes into client
-#   #   steps:
-#   #     - uses: actions/checkout@v3
-#   #       with:
-#   #         fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
-#   #     - name: Get changed files in the docs folder
-#   #       id: changed-files-specific
-#   #       uses: tj-actions/changed-files@v29.0.7
-#   #       with:
-#   #         files: |
-#   #           client/**
-
-#   #     - name: Run step if any file(s) in the docs folder change
-#   #       if: steps.changed-files-specific.outputs.any_changed == 'true'
-#   #       run: |
-#   #        echo "Files change in client"
+      - name: Run step if any file(s) in the docs folder change
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
+        run: |
+         echo "Files change in client"
 
 #   push-client:
 #     if: jobs.detect-client.steps.changed-files-specific.outputs.any_changed == 'true'
