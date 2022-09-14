@@ -15,10 +15,6 @@ jobs:
   detect-server:
     runs-on: ubuntu-latest  # windows-latest | macos-latest
     name: Detects changes into server
-    defaults:
-      run:
-        working-directory: ./server
-
     steps:
       - uses: actions/checkout@v3
         with:
@@ -75,7 +71,9 @@ jobs:
           ECR_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
           ECR_REPOSITORY: "finalproject-${{ github.ref_name }}-backend-image"
           IMAGE_TAG: ${{ steps.generate_sha.outputs.sha }}
+        working-directory: ./nginx
         run: |
+          
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
