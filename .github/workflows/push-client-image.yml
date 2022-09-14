@@ -69,7 +69,6 @@ jobs:
 ###################### BUILD and push image ####################
 ################################################################
        - uses: actions/checkout@v3
-       - name: build and push image
        - id: push-client-frontend
        - name: Push client frontend
          env:
