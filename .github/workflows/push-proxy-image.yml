@@ -17,7 +17,7 @@ jobs:
     name: Detects changes into proxy
     defaults:
       run:
-        working-directory: ./proxy
+        working-directory: ./nginx
 
     steps:
       - uses: actions/checkout@v3
