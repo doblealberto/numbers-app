@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - staging
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  detect-client:
+    runs-on: ubuntu-latest  # windows-latest | macos-latest
+    name: Detects changes into client
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
+      - name: Get changed files in the docs folder
+        id: changed-files-specific
+        uses: tj-actions/changed-files@v29.0.7
+        with:
+          files: |
+            client/**
+
+      - name: Run step if any file(s) in the docs folder change
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
+
+  push-client:
+    if: jobs.detect-client.steps.changed-files-specific.outputs.any_changed == 'true'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+################################################################
+################### Configure AWS credentials ##################
+################################################################
+       - name: Configure AWS credentials
+         uses: aws-actions/configure-aws-credentials@v1
+         with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+################################################################
+######################## Login to ECR  #########################
+################################################################
+       - name: Login to Amazon ECR
+         id: login-ecr
+         uses: aws-actions/amazon-ecr-login@v1
+
+################################################################
+######################## Generate SHA  #########################
+################################################################
+       - name: Generate sha
+         id: generate_sha
+         run: |
+          SHA=$(echo $GITHUB_SHA)
+          echo "::set-output name=sha::$SHA"
+
+################################################################
+###################### BUILD and push image ####################
+################################################################
+       - uses: actions/checkout@v3
+       - name: build and push image
+       - id: push-client-frontend
+       - name: Push client frontend
+         env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ github.ref_name }}-frontend-image
+          IMAGE_TAG: ${{ steps.generate_sha.outputs.sha }}
+         run: |
+          docker build .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY::latest
+
+
+
+
