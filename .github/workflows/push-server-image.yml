@@ -8,7 +8,7 @@ on:
       - staging
     paths:
         - 'server/**'
-        - 'docker-compose.yml'
+        - '!docker-compose.yml'
         - '!nginx/**'
         - '!client/**'
         - '!.github/**'
