@@ -31,24 +31,24 @@ jobs:
         run: |
          echo "Files change in client"
 
-#   push-client:
-#     if: jobs.detect-client.steps.changed-files-specific.outputs.any_changed == 'true'
-#     runs-on: ubuntu-latest
+  push-client:
+    if: jobs.detect-client.steps.changed-files-specific.outputs.any_changed == 'true'
+    runs-on: ubuntu-latest
 
-#     defaults:
-#       run:
-#         working-directory: .
+    defaults:
+      run:
+        working-directory: .
 
-#     steps:
-# ################################################################
-# ################### Configure AWS credentials ##################
-# ################################################################
-#       #  - name: Configure AWS credentials
-#       #    uses: aws-actions/configure-aws-credentials@v1
-#       #    with:
-#       #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#       #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#       #     aws-region: us-east-1
+    steps:
+################################################################
+################### Configure AWS credentials ##################
+################################################################
+       - name: Configure AWS credentials
+         uses: aws-actions/configure-aws-credentials@v1
+         with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
 # ################################################################
 # ######################## Login to ECR  #########################
