@@ -6,9 +6,14 @@ on:
       - prod
       - develop
       - staging
-  pull_request:
-    branches:
-      - main
+    paths:
+        - 'nginx/**'
+        - 'docker-compose.yml'
+        - '!server/**'
+        - '!client/**'
+        - '!.github/**'
+        - '!README.md'
+        - '!.gitignore'
 
 jobs:
 

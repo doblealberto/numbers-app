@@ -6,30 +6,24 @@ on:
       - prod
       - develop
       - staging
-  pull_request:
-    branches:
-      - main
+    paths:
+        - 'client/**'
+        - 'docker-compose.yml'
+        - '!server/**'
+        - '!nginx/**'
+        - '!.github/**'
+        - '!README.md'
+        - '!.gitignore'
 
 jobs:
 
   detect-server:
     runs-on: ubuntu-latest  # windows-latest | macos-latest
-    name: Detects changes into server
+    name: Detects changes into client
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
-      - name: Get changed files in the docs folder
-        id: changed-files-specific
-        uses: tj-actions/changed-files@v29.0.7
-        with:
-          files: |
-            server/**
+  
 
-      - name: Run step if any file(s) in the docs folder change
-        if: steps.changed-files-specific.outputs.any_changed == 'true'
-        run: |
-         echo "Files change in server"
+  
 ################################################################
 ######################## Checkout Code #########################
 ################################################################
@@ -65,13 +59,13 @@ jobs:
 # ################################################################
 # ###################### BUILD and push image ####################
 # ################################################################
-      - name: Push server
-        id: push-server-backend
+      - name: Push client
+        id: push-client-backend
         env:
           ECR_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
           ECR_REPOSITORY: "finalproject-${{ github.ref_name }}-backend-image"
           IMAGE_TAG: ${{ steps.generate_sha.outputs.sha }}
-        working-directory: ./server
+        working-directory: ./client
         run: |
           
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
