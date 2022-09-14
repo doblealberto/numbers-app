@@ -9,7 +9,7 @@ function App() {
     <Router>
       <Fragment>
         <header className="header">
-          <div>This is a multicontainer application</div>
+          <div>Test</div>
           <Link to="/">Home</Link>
           <Link to="/otherpage">Other page</Link>
         </header>
