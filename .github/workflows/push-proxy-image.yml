@@ -1,4 +1,6 @@
+
 name: push proxy
+
 
 on:
   push:
@@ -6,6 +8,7 @@ on:
       - prod
       - develop
       - staging
+
     paths:
         - 'nginx/**'
         - 'docker-compose.yml'
@@ -21,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest  # windows-latest | macos-latest
     name: Detects changes into proxy
 
+
     steps:
       - uses: actions/checkout@v3
         with:
@@ -35,12 +39,14 @@ jobs:
       - name: Run step if any file(s) in the docs folder change
         if: steps.changed-files-specific.outputs.any_changed == 'true'
         run: |
+
          echo "Files change in server"
 ################################################################
 ######################## Checkout Code #########################
 ################################################################
       - name: Checkout
         uses: actions/checkout@v3
+
 
 ################################################################
 ################### Configure AWS credentials ##################
@@ -55,13 +61,16 @@ jobs:
 # ################################################################
 # ######################## Login to ECR  #########################
 # ################################################################
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+
 # ################################################################
 # ######################## Generate SHA  #########################
 # ################################################################
+
       - name: Generate sha
         id: generate_sha
         run: |
@@ -83,3 +92,4 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
