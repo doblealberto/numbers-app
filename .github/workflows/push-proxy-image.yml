@@ -1,4 +1,6 @@
-name: CI
+
+name: push proxy
+
 
 on:
   push:
@@ -6,15 +8,23 @@ on:
       - prod
       - develop
       - staging
-  pull_request:
-    branches:
-      - main
+
+    paths:
+        - 'nginx/**'
+        - 'docker-compose.yml'
+        - '!server/**'
+        - '!client/**'
+        - '!.github/**'
+        - '!README.md'
+        - '!.gitignore'
 
 jobs:
 
-  detect-client:
+  detect-proxy:
     runs-on: ubuntu-latest  # windows-latest | macos-latest
-    name: Detects changes into client
+    name: Detects changes into proxy
+
+
     steps:
       - uses: actions/checkout@v3
         with:
@@ -29,30 +39,21 @@ jobs:
       - name: Run step if any file(s) in the docs folder change
         if: steps.changed-files-specific.outputs.any_changed == 'true'
         run: |
-         echo "Files change in proxy"
 
-  push-client:
-    if: jobs.detect-client.steps.changed-files-specific.outputs.any_changed == 'true'
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: .
-
-    steps:
-
+         echo "Files change in server"
 ################################################################
 ######################## Checkout Code #########################
 ################################################################
-       - name: Checkout
-         uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+
 
 ################################################################
 ################### Configure AWS credentials ##################
 ################################################################
-       - name: Configure AWS credentials
-         uses: aws-actions/configure-aws-credentials@v1
-         with:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
@@ -60,31 +61,35 @@ jobs:
 # ################################################################
 # ######################## Login to ECR  #########################
 # ################################################################
-       - name: Login to Amazon ECR
-         id: login-ecr
-         uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
 
 # ################################################################
 # ######################## Generate SHA  #########################
 # ################################################################
-       - name: Generate sha
-         id: generate_sha
-         run: |
+
+      - name: Generate sha
+        id: generate_sha
+        run: |
           SHA=$(echo $GITHUB_SHA)
           echo "::set-output name=sha::$SHA"
 
-#################################################################
-####################### BUILD and push image ####################
-#################################################################
-       - name: Push proxy
-  
-         id: push-proxy
-         env:
+# ################################################################
+# ###################### BUILD and push image ####################
+# ################################################################
+      - name: Push nginx
+        id: push-nginx
+        env:
           ECR_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
           ECR_REPOSITORY: "finalproject-${{ github.ref_name }}-proxy-image"
           IMAGE_TAG: ${{ steps.generate_sha.outputs.sha }}
-         run: |
-          docker build -t $IMAGE_TAG .
+        working-directory: ./nginx
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY::latest
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
