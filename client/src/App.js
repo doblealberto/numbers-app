@@ -11,7 +11,7 @@ function App() {
         <header className="header">
           <div>Testing change</div>
           <Link to="/">Home</Link>
-          <Link to="/otherpage">Other page</Link>
+          <Link to="/otherpage">Not other page</Link>
         </header>
         <div className="main">
           <Route exact path="/" component={MainComponent} />
