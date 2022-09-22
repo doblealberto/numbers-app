@@ -81,7 +81,7 @@ jobs:
 # ###################### BUILD and push image ####################
 # ################################################################
       - name: Build, tag, and push image to Amazon ECR
-        id: build-image
+        id: build-image-proxy
         env:
           ECR_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
           ECR_REPOSITORY: "final-challenge-test-1-${{ github.ref_name }}-frontend-image"
@@ -108,7 +108,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: proxy
-          image: ${{ steps.build-image.outputs.image }}
+          image: ${{ steps.build-image-proxy.outputs.image }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
