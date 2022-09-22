@@ -116,5 +116,5 @@ jobs:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: final-challenge-test-1-${{ github.ref_name }}-api
           cluster: final-challenge-test-1-${{ github.ref_name }}-cluster
-          wait-for-service-stability: false
+          wait-for-service-stability: true
 
