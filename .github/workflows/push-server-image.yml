@@ -84,7 +84,7 @@ jobs:
         id: build-image-server
         env:
           ECR_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
-          ECR_REPOSITORY: "final-challenge-test-1-${{ github.ref_name }}-backend-image"
+          ECR_REPOSITORY: "numbers-${{ github.ref_name }}-backend-image"
           IMAGE_TAG: ${{ steps.generate_sha.outputs.sha }}
         working-directory: ./server
         run: |
@@ -100,7 +100,7 @@ jobs:
 #############################################################
       - name: Download task definition
         run: |
-          aws ecs describe-task-definition --task-definition  final-challenge-test-1-${{ github.ref_name }}-api --query taskDefinition > task-definition.json
+          aws ecs describe-task-definition --task-definition  numbers-${{ github.ref_name }}-api --query taskDefinition > task-definition.json
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
@@ -114,7 +114,7 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: final-challenge-test-1-${{ github.ref_name }}-api
-          cluster: final-challenge-test-1-${{ github.ref_name }}-cluster
+          service: numbers-${{ github.ref_name }}-api
+          cluster: numbers-${{ github.ref_name }}-cluster
           wait-for-service-stability: false
 
