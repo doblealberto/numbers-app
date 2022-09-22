@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - prod
-      - develop
+      - dev
       - staging
 
     paths:
