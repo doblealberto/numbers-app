@@ -17,7 +17,7 @@ on:
 
 jobs:
 
-  detect-server:
+  client-deployment:
     runs-on: ubuntu-latest  # windows-latest | macos-latest
     name: Detects changes into client
     steps:

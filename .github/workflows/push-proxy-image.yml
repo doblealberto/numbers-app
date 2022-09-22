@@ -20,7 +20,7 @@ on:
 
 jobs:
 
-  detect-proxy:
+  proxy-deployment:
     runs-on: ubuntu-latest  # windows-latest | macos-latest
     name: Detects changes into proxy
 
