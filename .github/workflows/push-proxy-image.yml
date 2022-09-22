@@ -80,16 +80,40 @@ jobs:
 # ################################################################
 # ###################### BUILD and push image ####################
 # ################################################################
-      - name: Push nginx
-        id: push-nginx
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
         env:
           ECR_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
-          ECR_REPOSITORY: "final-challenge-test-1-${{ github.ref_name }}-proxy-image"
+          ECR_REPOSITORY: "final-challenge-test-1-${{ github.ref_name }}-frontend-image"
           IMAGE_TAG: ${{ steps.generate_sha.outputs.sha }}
         working-directory: ./nginx
         run: |
+          
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
+#############################################################
+########## Deploy to ecs full workflow ######################
+#############################################################
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition --task-definition  final-challenge-test-1-${{ github.ref_name }}-api --query taskDefinition > task-definition.json
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: proxy
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: final-challenge-test-1-${{ github.ref_name }}-api
+          cluster: final-challenge-test-1-${{ github.ref_name }}-cluster
+          wait-for-service-stability: true
