@@ -84,7 +84,7 @@ jobs:
         id: push-nginx
         env:
           ECR_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
-          ECR_REPOSITORY: "finalproject-${{ github.ref_name }}-proxy-image"
+          ECR_REPOSITORY: "final-challenge-test-1-${{ github.ref_name }}-proxy-image"
           IMAGE_TAG: ${{ steps.generate_sha.outputs.sha }}
         working-directory: ./nginx
         run: |
