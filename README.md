@@ -26,6 +26,32 @@ on:
         - '!.gitignore'
 ```
 which allows us to push our docker images to the right site via using path finders. Notice : `nginx/**` which allows us to focus on changes into that specific folder.
+## BUILD AND PUSH THE IMAGE
+```
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image-proxy
+        env:
+          ECR_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
+          ECR_REPOSITORY: "numbers-${{ github.ref_name }}-proxy-image"
+          IMAGE_TAG: ${{ steps.generate_sha.outputs.sha }}
+        working-directory: ./nginx
+        run: |
+          
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+```
+In this step we build and push the image to the ECR repository notice how we set the route to our `ECR repository` by adding the following environment 
+image 
+```
+          ECR_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
+          ECR_REPOSITORY: "numbers-${{ github.ref_name }}-proxy-image"
+          IMAGE_TAG: ${{ steps.generate_sha.outputs.sha }}
+```
+
+## NGINX CONFIGURATION
 
 `nginx` folder which containts the configuration for our reverse proxy.
 ```
