@@ -2,7 +2,7 @@
 
 Its an app running on ECS the architecture of the app is described bellow.
 
-TEST IT YOURSELF: http://finalproject-main-1355072970.us-east-1.elb.amazonaws.com/
+TEST IT YOURSELF: https://dev.numbersappecs.tk/
 
 INFRASTRUCTURE CODE AT: https://github.com/doblealberto/ecs-aws-infra-numbers
 
