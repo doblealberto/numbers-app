@@ -50,6 +50,41 @@ image
           ECR_REPOSITORY: "numbers-${{ github.ref_name }}-proxy-image"
           IMAGE_TAG: ${{ steps.generate_sha.outputs.sha }}
 ```
+## DOWNLOAD TASK DEFINITION AND DEPLOY TO ECS
+```
+    - name: Download task definition
+            run: |
+              aws ecs describe-task-definition --task-definition  numbers-${{ github.ref_name }}-api --query taskDefinition > task-definition.json
+          - name: Fill in the new image ID in the Amazon ECS task definition
+            id: task-def
+            uses: aws-actions/amazon-ecs-render-task-definition@v1
+            with:
+              task-definition: task-definition.json
+              container-name: proxy
+              image: ${{ steps.build-image-proxy.outputs.image }}
+
+          - name: Deploy Amazon ECS task definition
+            uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+            with:
+              task-definition: ${{ steps.task-def.outputs.task-definition }}
+              service: numbers-${{ github.ref_name }}-api
+              cluster: numbers-${{ github.ref_name }}-cluster
+              wait-for-service-stability: false
+```
+We need to set `--task-definition  numbers-${{ github.ref_name }}-api` equals to the family of the task definition in this case 
+`numbers-${{ github.ref_name }}-api` this will help download output our task definiton and then `output` it to `json` format by using `>` operator.
+
+```
+      - name: Deploy Amazon ECS task definition
+                  uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+                  with:
+                    task-definition: ${{ steps.task-def.outputs.task-definition }}
+                    service: numbers-${{ github.ref_name }}-api
+                    cluster: numbers-${{ github.ref_name }}-cluster
+                    wait-for-service-stability: false
+```
+finaly we updtate our task definition by using: `aws-actions/amazon-ecs-deploy-task-definition@v1` action
+
 
 ## NGINX CONFIGURATION
 
